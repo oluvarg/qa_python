@@ -92,8 +92,8 @@ class TestBooksCollector:
         collector.add_book_in_favorites('Гордость и предубеждение и зомби')
         collector.add_book_in_favorites('Гордость и предубеждение и зомби')
 
-        assert len(collector.get_list_of_favorites_books()) == 1, ('Число книг в избранном не соответствует ожидаемому '
-                                                                   'результату')
+        assert len(collector.get_list_of_favorites_books()) == 1, ('Число книг в избранном не соответствует '
+                                                                   'ожидаемому результату')
 
     def test_delete_book_from_favorites_delete_book(self, collector):
 
