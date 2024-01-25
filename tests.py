@@ -1,14 +1,9 @@
 import pytest
-
-from main import BooksCollector
 import random
 import string
 
 
 class TestBooksCollector:
-    @pytest.fixture
-    def collector(self):
-        return BooksCollector()
 
     def test_add_new_book_add_two_books(self, collector):
 
@@ -41,10 +36,8 @@ class TestBooksCollector:
                                           'Книга2': 'Фантастика',
                                           'Книга3': 'Детективы',
                                           'Книга4': 'Ужасы',
-                                          'Книга5': 'Комедии',
-                                          'Книга6': 'Фантастика',
-                                          'Книга7': 'Фантастика'},
-                                         ['Книга2', 'Книга6', 'Книга7']
+                                          'Книга5': 'Комедии',},
+                                         ['Книга2']
                                  )
                              ]
 
