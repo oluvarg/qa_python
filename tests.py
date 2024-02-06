@@ -1,24 +1,105 @@
-from main import BooksCollector
+import pytest
+import random
+import string
 
-# класс TestBooksCollector объединяет набор тестов, которыми мы покрываем наше приложение BooksCollector
-# обязательно указывать префикс Test
+
 class TestBooksCollector:
 
-    # пример теста:
-    # обязательно указывать префикс test_
-    # дальше идет название метода, который тестируем add_new_book_
-    # затем, что тестируем add_two_books - добавление двух книг
-    def test_add_new_book_add_two_books(self):
-        # создаем экземпляр (объект) класса BooksCollector
-        collector = BooksCollector()
+    def test_add_new_book_add_two_books(self, collector):
 
-        # добавляем две книги
         collector.add_new_book('Гордость и предубеждение и зомби')
         collector.add_new_book('Что делать, если ваш кот хочет вас убить')
 
-        # проверяем, что добавилось именно две
-        # словарь books_rating, который нам возвращает метод get_books_rating, имеет длину 2
-        assert len(collector.get_books_rating()) == 2
+        assert len(collector.get_books_genre()) == 2, 'Колличество сущностей в списке не совпадает'
 
-    # напиши свои тесты ниже
-    # чтобы тесты были независимыми в каждом из них создавай отдельный экземпляр класса BooksCollector()
+    def test_add_new_book_validation_name_book_negative(self,collector):
+
+        collector.add_new_book(''.join(random.choice(string.ascii_letters + string.digits) for _ in range(41)))
+        collector.add_new_book('')
+
+        assert len(collector.get_books_genre()) == 0, ('Была создана сущность с названием с кол-вом симоволов:'
+                                                       ' 0 или больше 40')
+
+    def test_set_book_genre_set_new_book_genre(self, collector):
+
+        collector.add_new_book('Гордость и предубеждение и зомби')
+        collector.set_book_genre('Гордость и предубеждение и зомби', 'Ужасы')
+
+        assert collector.get_book_genre(name='Гордость и предубеждение и зомби') == 'Ужасы', ('Жанр книги'
+                                                                                              'не соответствует'
+                                                                                              'ожидаемому результату')
+
+    @pytest.mark.parametrize('books_genre, expected_result',
+                             [
+                                 (
+                                         {'Книга1': 'Ужасы',
+                                          'Книга2': 'Фантастика',
+                                          'Книга3': 'Детективы',
+                                          'Книга4': 'Ужасы',
+                                          'Книга5': 'Комедии',},
+                                         ['Книга2']
+                                 )
+                             ]
+
+    )
+    def test_get_books_with_specific_genre(self, books_genre, expected_result, collector):
+
+        collector.books_genre = books_genre
+
+        assert collector.get_books_with_specific_genre('Фантастика') == expected_result, ('Выведенный список книг не '
+                                                                                          'соответстует ожидаемому '
+                                                                                          'результату')
+
+    @pytest.mark.parametrize('books_genre, expected_result',
+                             [
+                                 (
+                                         {'Книга1': 'Ужасы',
+                                          'Книга2': 'Фантастика',
+                                          'Книга3': 'Детективы',
+                                          'Книга4': 'Мультфильмы',
+                                          'Книга5': 'Комедии'},
+                                         ['Книга2', 'Книга4', 'Книга5']
+                                 ),
+                                 (
+                                         {'Книга1': 'Ужасы',
+                                          'Книга2': 'Мультфильмы',
+                                          'Книга3': 'Детективы',
+                                          'Книга4': 'Ужасы',
+                                          'Книга5': 'Детективы'},
+                                         ['Книга2']
+                                 )
+                             ]
+                             )
+    def test_get_books_for_children_check_age_rating(self, books_genre, expected_result, collector):
+
+        collector.books_genre = books_genre
+
+        assert collector.get_books_for_children() == expected_result,  ('Выведенный список книг не '
+                                                                        'соответстует ожидаемому '
+                                                                        'результату')
+
+    def test_add_book_in_favorites_add_one_book(self, collector):
+
+        collector.add_new_book('Гордость и предубеждение и зомби')
+        collector.add_book_in_favorites('Гордость и предубеждение и зомби')
+
+        assert len(collector.get_list_of_favorites_books()) == 1, ('Число книг в избранном не соответствует ожидаемому '
+                                                                   'результату')
+
+    def test_add_book_in_favorites_double_add_book(self, collector):
+
+        collector.add_new_book('Гордость и предубеждение и зомби')
+        collector.add_book_in_favorites('Гордость и предубеждение и зомби')
+        collector.add_book_in_favorites('Гордость и предубеждение и зомби')
+
+        assert len(collector.get_list_of_favorites_books()) == 1, ('Число книг в избранном не соответствует '
+                                                                   'ожидаемому результату')
+
+    def test_delete_book_from_favorites_delete_book(self, collector):
+
+        collector.add_new_book('Гордость и предубеждение и зомби')
+        collector.add_book_in_favorites('Гордость и предубеждение и зомби')
+        collector.delete_book_from_favorites('Гордость и предубеждение и зомби')
+
+        assert len(collector.get_list_of_favorites_books()) == 0, ('Число книг в избранном не соответствует ожидаемому '
+                                                                   'результату')
